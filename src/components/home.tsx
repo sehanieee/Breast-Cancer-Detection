@@ -1,11 +1,15 @@
-import React, { useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
+import ProviderLoginDialog from "./ProviderLoginDialog";
+import PatientLoginDialog from "./PatientLoginDialog";
+import { Twitter } from "lucide-react";
 
-const newsItems = [
+// Export newsItems so it can be imported in NewsDetail.tsx
+export const newsItems = [
   {
     id: 1,
     title:
@@ -13,6 +17,7 @@ const newsItems = [
     summary:
       "Adding the immunotherapy medicine camrelizumab to chemotherapy offered better outcomes than chemotherapy alone for TNBC.",
     date: "Apr 15, 2025",
+    url: "https://www.breastcancer.org/research-news/camrelizumab-triple-negative-breast-cancer",
   },
   {
     id: 2,
@@ -21,6 +26,7 @@ const newsItems = [
     summary:
       "Abraxane instead of Taxotere and carboplatin led to a better response and fewer serious side effects.",
     date: "Feb 6, 2025",
+    url: "https://community.breastcancer.org/en/discussion/886578/one-chemo-medicine-before-surgery-for-early-stage-her2-positive-breast-cancer-may-be-better-than-two",
   },
   {
     id: 3,
@@ -29,6 +35,7 @@ const newsItems = [
     summary:
       "Some breast cancers may be more likely to come back as metastatic disease five to 10 years after surgery in people ages 35 and younger.",
     date: "Jan 17, 2025",
+    url: "https://www.breastcancer.org/research-news/late-metastatic-recurrence-risk-higher-for-young-people",
   },
 ];
 
@@ -62,6 +69,8 @@ const helpfulLinks = [
 const Home = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [providerLoginDialogOpen, setProviderLoginDialogOpen] = useState(false);
+  const [patientLoginDialogOpen, setPatientLoginDialogOpen] = useState(false);
 
   // Refs for scrolling to sections
   const newsRef = useRef(null);
@@ -94,11 +103,25 @@ const Home = () => {
   }, [location]);
 
   const handleStartDetecting = () => {
-    navigate("/input");
+    // Show provider login dialog instead of direct navigation
+    setProviderLoginDialogOpen(true);
+  };
+
+  const handlePatientLogin = () => {
+    // Show patient login dialog
+    setPatientLoginDialogOpen(true);
   };
 
   return (
-    <div className="to-white flex flex-col p-6 min-h-screen w-full from-[#2a0522] bg-[url('https://storage.googleapis.com/tempo-public-images/github%7C148965502-1745647287964-pinkribbonbreastcancerawarenessmonthseamlessbackgroundillustrationvectorjpg')]">
+    <div className="to-white flex flex-col p-6 min-h-screen w-full from-[#2a0522] bg-white">
+      <ProviderLoginDialog
+        open={providerLoginDialogOpen}
+        onOpenChange={setProviderLoginDialogOpen}
+      />
+      <PatientLoginDialog
+        open={patientLoginDialogOpen}
+        onOpenChange={setPatientLoginDialogOpen}
+      />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -108,16 +131,16 @@ const Home = () => {
         {/* Main Title Section */}
         <div className="text-center mb-12 font-serif">
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4 text-pink-600 tracking-tight font-sans"
+            className="mb-4 tracking-tight font-sans font-medium text-pink-600 text-6xl"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
           >
-            BREAST CANCER DETECTION
+            WELCOME TO MammoBloom !
           </motion.h1>
 
           <motion.p
-            className="md:text-2xl text-pink-400 mb-8 italic font-bold font-sans text-4xl"
+            className="md:text-2xl mb-8 italic font-bold font-sans text-4xl text-[#746b6b]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.7, duration: 0.8 }}
@@ -129,27 +152,42 @@ const Home = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.9, duration: 0.5 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="font-sans"
+            className="font-sans flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Button
-              onClick={handleStartDetecting}
-              className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-md"
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                onClick={handleStartDetecting}
+                className="bg-pink-600 hover:bg-pink-700 text-white px-8 py-6 text-lg rounded-full shadow-md w-full"
+              >
+                Start Detecting
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex flex-col"
             >
-              Start Detecting
-            </Button>
+              <Button
+                onClick={handlePatientLogin}
+                className="bg-white hover:bg-gray-100 text-pink-600 border-2 border-pink-600 px-8 py-6 text-lg rounded-full shadow-md w-full"
+              >
+                Login
+              </Button>
+              <p className="text-center text-pink-600 mt-2 text-sm font-medium">
+                Please login to download your report
+              </p>
+            </motion.div>
           </motion.div>
         </div>
 
         <motion.p
-          className="text-center text-xl text-pink-600 font-medium"
+          className="text-center text-pink-600 font-medium text-base"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.8 }}
         >
           Our mission is to enhance early breast cancer detection through the
-          use of the most accurate and reliable diagnostic tool
+          use of the most accurate and reliable diagnostic tool.
         </motion.p>
 
         {/* News Section */}
@@ -161,23 +199,31 @@ const Home = () => {
           transition={{ delay: 1.1, duration: 0.8 }}
           className="w-full mt-8"
         >
-          <h2 className="text-2xl font-bold text-pink-600 mb-6 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-center text-pink-700">
             Recent News & Research
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {newsItems.map((item) => (
-              <Card
+              <Link
+                to={item.url}
                 key={item.id}
-                className="border-pink-200 shadow-md hover:shadow-lg transition-shadow duration-300"
+                className="block hover:no-underline"
               >
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-pink-700 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 mb-4">{item.summary}</p>
-                  <p className="text-sm text-pink-400">{item.date}</p>
-                </CardContent>
-              </Card>
+                <Card className="border-pink-200 shadow-md hover:shadow-lg transition-shadow duration-300 hover:border-pink-400">
+                  <CardContent className="p-6">
+                    <h3 className="font-bold text-lg text-pink-700 mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 mb-4">{item.summary}</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-pink-400">{item.date}</p>
+                      <p className="text-sm text-pink-600 font-medium">
+                        Read more →
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </motion.div>
@@ -218,15 +264,6 @@ const Home = () => {
           </Card>
         </div>
 
-        <motion.p
-          className="text-sm text-gray-500 mt-12 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3, duration: 0.8 }}
-        >
-          A Professional Tool For Healthcare Providers
-        </motion.p>
-
         {/* Resources Section */}
         <motion.div
           ref={resourcesRef}
@@ -236,7 +273,7 @@ const Home = () => {
           transition={{ delay: 1.2, duration: 0.8 }}
           className="w-full mt-12"
         >
-          <h2 className="text-2xl font-bold text-pink-600 mb-6 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-center text-[3f3f3f] text-pink-700">
             Helpful Resources
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -253,28 +290,53 @@ const Home = () => {
             ))}
           </div>
         </motion.div>
-
-        {/* Contact Section */}
-        <div
-          ref={contactRef}
-          id="contact"
-          className="w-full mt-12 flex justify-end"
-        >
+      </motion.div>
+      {/* Footer */}
+      <footer
+        ref={contactRef}
+        id="contact"
+        className="mt-12 w-full from-pink-100 to-pink-200 border-t border-pink-300 shadow-inner"
+      >
+        <div className="max-w-7xl mx-auto p-10">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.4, duration: 0.8 }}
-            className="text-right"
+            className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
           >
-            <p className="text-pink-700 font-medium mb-2">
-              Cancer information, answers, and hope.
-              <br />
-              Available every minute of every day.
-            </p>
-            <p className="text-pink-800 font-bold text-xl">011 288 88 88</p>
+            {/* Description */}
+            <div className="text-pink-800 font-medium max-w-md">
+              <p>
+                Cancer information, answers, and hope.
+                <br />
+                Available every minute of every day.
+              </p>
+            </div>
+
+            {/* Contact Info */}
+            <div className="text-pink-800">
+              <h3 className="text-xl font-bold mb-2">Contact Info</h3>
+              <p>📞 Phone: 011 288 88 88</p>
+              <p>
+                📧 Email:{" "}
+                <a href="mailto:mammobloom@gmail.com" className="underline">
+                  mammobloom@gmail.com
+                </a>
+              </p>
+              <p>📍 Location: Colombo, Sri Lanka</p>
+            </div>
+
+            {/* Social Media */}
+            <div className="text-right text-pink-800">
+              <h3 className="text-xl font-bold mb-2">Follow us on X</h3>
+              <div className="flex items-center justify-center md:justify-end">
+                <Twitter className="h-5 w-5 text-pink-700 mr-2" />
+                <span>@MammoBloom</span>
+              </div>
+            </div>
           </motion.div>
         </div>
-      </motion.div>
+      </footer>
     </div>
   );
 };
